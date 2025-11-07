@@ -4,6 +4,7 @@
   min-height: 100%;
 }
 
+/* Welcome Card */
 .welcome-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -12,11 +13,11 @@
   box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
 }
 
-.welcome-card card-header {
+.welcome-card ion-card-header {
   padding: 20px 20px 10px 20px;
 }
 
-.welcome-card card-title {
+.welcome-card ion-card-title {
   color: white;
   display: flex;
   align-items: flex-start;
@@ -75,15 +76,15 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.actions-card card-header, 
-.policies-card card-header,
-.tips-card card-header {
+.actions-card ion-card-header, 
+.policies-card ion-card-header,
+.tips-card ion-card-header {
   padding-bottom: 10px;
 }
 
-.actions-card card-title,
-.policies-card card-title,
-.tips-card card-title {
+.actions-card ion-card-title,
+.policies-card ion-card-title,
+.tips-card ion-card-title {
   font-size: 18px;
   font-weight: 700;
   color: #2c3e50;
@@ -129,7 +130,7 @@
 }
 
 /* Policies */
-.policies-card card-header {
+.policies-card ion-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;

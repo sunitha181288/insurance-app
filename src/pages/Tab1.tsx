@@ -15,7 +15,10 @@ import {
   IonItem,
   IonLabel,
   IonBadge,
-  IonButton
+  IonButton,
+  IonAlert,
+  IonToast,
+  IonLoading
 } from '@ionic/react';
 import { 
   shieldCheckmark, 
@@ -26,19 +29,19 @@ import {
   cash,
   alertCircle,
   trendingUp,
-  personCircle
+  checkmarkCircle,
+  closeCircle
 } from 'ionicons/icons';
+import { useState } from 'react';
 import './Tab1.css';
 
 const Tab1: React.FC = () => {
-  const quickActions = [
-    { icon: documentText, label: 'File Claim', color: 'primary', path: '/claims' },
-    { icon: cash, label: 'Make Payment', color: 'success', path: '/payments' },
-    { icon: shieldCheckmark, label: 'New Policy', color: 'warning', path: '/policies' },
-    { icon: alertCircle, label: 'Emergency', color: 'danger', path: '/emergency' }
-  ];
-
-  const policies = [
+  const [showPaymentAlert, setShowPaymentAlert] = useState(false);
+  const [showPaymentToast, setShowPaymentToast] = useState(false);
+  const [showPaymentProcessing, setShowPaymentProcessing] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastColor, setToastColor] = useState('success');
+  const [policies, setPolicies] = useState([
     { 
       id: 1, 
       type: 'Auto Insurance', 
@@ -46,7 +49,9 @@ const Tab1: React.FC = () => {
       premium: '$120', 
       status: 'Active', 
       dueDate: '2024-01-15',
-      coverage: 'Full Coverage'
+      coverage: 'Full Coverage',
+      isDue: true,
+      dueAmount: '$120'
     },
     { 
       id: 2, 
@@ -55,7 +60,9 @@ const Tab1: React.FC = () => {
       premium: '$85', 
       status: 'Active', 
       dueDate: '2024-01-20',
-      coverage: 'Property Damage'
+      coverage: 'Property Damage',
+      isDue: true,
+      dueAmount: '$85'
     },
     { 
       id: 3, 
@@ -64,17 +71,136 @@ const Tab1: React.FC = () => {
       premium: '$200', 
       status: 'Pending', 
       dueDate: '2024-01-10',
-      coverage: 'Family Plan'
+      coverage: 'Family Plan',
+      isDue: false,
+      dueAmount: '$200'
+    }
+  ]);
+
+  const quickActions = [
+    { 
+      icon: documentText, 
+      label: 'File Claim', 
+      color: 'primary', 
+      action: () => handleFileClaim() 
+    },
+    { 
+      icon: cash, 
+      label: 'Make Payment', 
+      color: 'success', 
+      action: () => handleMakePayment() 
+    },
+    { 
+      icon: shieldCheckmark, 
+      label: 'New Policy', 
+      color: 'warning', 
+      action: () => handleNewPolicy() 
+    },
+    { 
+      icon: alertCircle, 
+      label: 'Emergency', 
+      color: 'danger', 
+      action: () => handleEmergency() 
     }
   ];
 
-  const stats = [
-    { value: '3', label: 'Total Policies', color: '#3880ff' },
-    { value: '$405', label: 'Monthly Premium', color: '#2dd36f' },
-    { value: '1', label: 'Pending Claims', color: '#ffc409' }
-  ];
-
   const activePolicies = policies.filter(policy => policy.status === 'Active').length;
+  const dueBills = policies.filter(policy => policy.isDue);
+  const totalDue = dueBills.reduce((sum, policy) => sum + parseInt(policy.dueAmount.replace('$', '')), 0);
+
+  // Payment Handler Functions
+  const handleMakePayment = () => {
+    if (dueBills.length === 0) {
+      setToastMessage('No due bills found! All payments are up to date.');
+      setToastColor('success');
+      setShowPaymentToast(true);
+      return;
+    }
+    
+    setShowPaymentAlert(true);
+  };
+
+  const handleQuickPayment = (policyId: number) => {
+    const policy = policies.find(p => p.id === policyId);
+    if (policy && policy.isDue) {
+      processPayment([policy]);
+    }
+  };
+
+  const handlePayAll = () => {
+    if (dueBills.length === 0) {
+      setToastMessage('No due bills to pay! All payments are up to date.');
+      setToastColor('success');
+      setShowPaymentToast(true);
+      return;
+    }
+    processPayment(dueBills);
+  };
+
+  const processPayment = async (billsToPay: any[]) => {
+    setShowPaymentAlert(false);
+    setShowPaymentProcessing(true);
+
+    try {
+      console.log('Initiating payment to gateway...');
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            const isSuccess = Math.random() > 0.1;
+      
+      if (isSuccess) {
+        const updatedPolicies = policies.map(policy => {
+          if (billsToPay.find(bill => bill.id === policy.id)) {
+            return {
+              ...policy,
+              isDue: false,
+              dueDate: getNextDueDate(policy.dueDate)
+            };
+          }
+          return policy;
+        });
+        
+        setPolicies(updatedPolicies);
+        
+        const totalPaid = billsToPay.reduce((sum, policy) => sum + parseInt(policy.dueAmount.replace('$', '')), 0);
+        setToastMessage(`Payment of $${totalPaid} processed successfully! All due bills cleared.`);
+        setToastColor('success');
+      } else {
+        // Payment failed
+        setToastMessage('Payment failed. Please try again or use a different payment method.');
+        setToastColor('danger');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      setToastMessage('Payment processing error. Please try again.');
+      setToastColor('danger');
+    } finally {
+      setShowPaymentProcessing(false);
+      setShowPaymentToast(true);
+    }
+  };
+
+  const getNextDueDate = (currentDueDate: string) => {
+    const date = new Date(currentDueDate);
+    date.setMonth(date.getMonth() + 1);
+    return date.toISOString().split('T')[0];
+  };
+
+  const handleFileClaim = () => {
+    setToastMessage('Redirecting to claims filing...');
+    setToastColor('primary');
+    setShowPaymentToast(true);
+  };
+
+  const handleNewPolicy = () => {
+    setToastMessage('Opening new policy application...');
+    setToastColor('warning');
+    setShowPaymentToast(true);
+  };
+
+  const handleEmergency = () => {
+    setToastMessage('Connecting to emergency services...');
+    setToastColor('danger');
+    setShowPaymentToast(true);
+  };
 
   return (
     <IonPage>
@@ -103,16 +229,80 @@ const Tab1: React.FC = () => {
                   <div className="stat-label">Active Policies</div>
                 </div>
                 <div className="stat">
-                  <div className="stat-number">${405}</div>
+                  <div className="stat-number">${policies.reduce((sum, policy) => sum + parseInt(policy.premium.replace('$', '')), 0)}</div>
                   <div className="stat-label">Monthly</div>
                 </div>
                 <div className="stat">
-                  <div className="stat-number">100%</div>
-                  <div className="stat-label">Covered</div>
+                  <div className="stat-number">{dueBills.length}</div>
+                  <div className="stat-label">Due Bills</div>
                 </div>
               </div>
             </IonCardContent>
           </IonCard>
+
+          {/* Due Bills Alert - Only shows when there are due bills */}
+          {dueBills.length > 0 ? (
+            <IonCard className="due-bills-card">
+              <IonCardHeader>
+                <IonCardTitle>
+                  <IonIcon icon={alertCircle} className="due-icon" />
+                  Due Bills
+                </IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
+                <div className="due-bills-content">
+                  <div className="due-amount">
+                    <span className="amount">${totalDue}</span>
+                    <span className="due-text">Total Due</span>
+                  </div>
+                  <IonButton 
+                    className="pay-all-btn" 
+                    fill="solid" 
+                    color="success"
+                    onClick={handlePayAll}
+                  >
+                    <IonIcon icon={cash} slot="start" />
+                    Pay All
+                  </IonButton>
+                </div>
+                <div className="due-bills-list">
+                  {dueBills.map((bill) => (
+                    <div key={bill.id} className="due-bill-item">
+                      <IonIcon icon={bill.icon} className="bill-icon" />
+                      <div className="bill-info">
+                        <span className="bill-type">{bill.type}</span>
+                        <span className="bill-due">Due {bill.dueDate}</span>
+                      </div>
+                      <div className="bill-actions">
+                        <span className="bill-amount">{bill.dueAmount}</span>
+                        <IonButton 
+                          size="small" 
+                          fill="solid" 
+                          color="primary"
+                          onClick={() => handleQuickPayment(bill.id)}
+                        >
+                          Pay Now
+                        </IonButton>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </IonCardContent>
+            </IonCard>
+          ) : (
+            /* No Due Bills Message - Shows when all bills are paid */
+            <IonCard className="no-due-bills-card">
+              <IonCardContent>
+                <div className="no-due-content">
+                  <IonIcon icon={checkmarkCircle} className="no-due-icon" />
+                  <div className="no-due-text">
+                    <h3>No Due Bills!</h3>
+                    <p>All your payments are up to date. Great job!</p>
+                  </div>
+                </div>
+              </IonCardContent>
+            </IonCard>
+          )}
 
           {/* Quick Actions */}
           <IonCard className="actions-card">
@@ -128,6 +318,7 @@ const Tab1: React.FC = () => {
                         className={`action-button ${action.color}`} 
                         fill="clear"
                         expand="block"
+                        onClick={action.action}
                       >
                         <div className="action-content">
                           <IonIcon icon={action.icon} className="action-icon" />
@@ -156,7 +347,9 @@ const Tab1: React.FC = () => {
                     <p>{policy.coverage}</p>
                     <div className="policy-details">
                       <span className="premium">{policy.premium}/month</span>
-                      <span className="due-date">Due {policy.dueDate}</span>
+                      <span className={`due-date ${policy.isDue ? 'due' : 'paid'}`}>
+                        {policy.isDue ? `Due ${policy.dueDate}` : `Paid until ${policy.dueDate}`}
+                      </span>
                     </div>
                   </IonLabel>
                   <IonBadge 
@@ -190,6 +383,48 @@ const Tab1: React.FC = () => {
             </IonCardContent>
           </IonCard>
         </div>
+
+        {/* Payment Confirmation Alert */}
+        <IonAlert
+          isOpen={showPaymentAlert}
+          onDidDismiss={() => setShowPaymentAlert(false)}
+          header={'Process Payment'}
+          message={`You are about to pay $${totalDue} for ${dueBills.length} due bill(s). This will redirect to our secure payment gateway.`}
+          buttons={[
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              cssClass: 'secondary'
+            },
+            {
+              text: 'Proceed to Payment',
+              handler: () => handlePayAll()
+            }
+          ]}
+        />
+
+        {/* Payment Processing Loader */}
+        <IonLoading
+          isOpen={showPaymentProcessing}
+          message={'Processing payment with gateway...'}
+          duration={0}
+        />
+
+        {/* Payment Result Toast */}
+        <IonToast
+          isOpen={showPaymentToast}
+          onDidDismiss={() => setShowPaymentToast(false)}
+          message={toastMessage}
+          duration={4000}
+          position="bottom"
+          color={toastColor}
+          buttons={[
+            {
+              icon: closeCircle,
+              role: 'cancel'
+            }
+          ]}
+        />
       </IonContent>
     </IonPage>
   );
