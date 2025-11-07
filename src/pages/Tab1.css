@@ -1,0 +1,240 @@
+.dashboard-container {
+  padding: 16px;
+  background: #f8f9fa;
+  min-height: 100%;
+}
+
+.welcome-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+.welcome-card card-header {
+  padding: 20px 20px 10px 20px;
+}
+
+.welcome-card card-title {
+  color: white;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.welcome-icon {
+  font-size: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  border-radius: 16px;
+  margin-top: 4px;
+}
+
+.welcome-text {
+  flex: 1;
+}
+
+.greeting {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.welcome-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 16px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* Quick Actions */
+.actions-card, .policies-card, .tips-card {
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.actions-card card-header, 
+.policies-card card-header,
+.tips-card card-header {
+  padding-bottom: 10px;
+}
+
+.actions-card card-title,
+.policies-card card-title,
+.tips-card card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actions-grid {
+  padding: 0;
+}
+
+.action-button {
+  --background: white;
+  --border-radius: 16px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  height: 100px;
+  margin: 0;
+}
+
+.action-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.action-icon {
+  font-size: 32px;
+}
+
+.action-button.primary .action-icon { color: #3880ff; }
+.action-button.success .action-icon { color: #2dd36f; }
+.action-button.warning .action-icon { color: #ffc409; }
+.action-button.danger .action-icon { color: #eb445a; }
+
+.action-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: center;
+}
+
+/* Policies */
+.policies-card card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 16px 10px 16px;
+}
+
+.policy-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+  --background: transparent;
+  --min-height: 80px;
+  border-bottom: 1px solid #f0f0f0;
+  margin: 0;
+}
+
+.policy-item:last-child {
+  border-bottom: none;
+}
+
+.policy-icon {
+  font-size: 24px;
+  color: #667eea;
+  background: #f0f4ff;
+  padding: 8px;
+  border-radius: 12px;
+  margin-right: 12px;
+}
+
+.policy-content h3 {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+
+.policy-content p {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin: 0 0 6px 0;
+}
+
+.policy-details {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+}
+
+.premium {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.due-date {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.status-badge {
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* Tips Card */
+.tips-card ion-icon {
+  color: #ffc409;
+}
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tip-item:last-child {
+  border-bottom: none;
+}
+
+.tip-bullet {
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+.tip-text {
+  flex: 1;
+  color: #2c3e50;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 360px) {
+  .dashboard-container {
+    padding: 12px;
+  }
+  
+  .welcome-stats {
+    gap: 8px;
+  }
+  
+  .stat-number {
+    font-size: 18px;
+  }
+}
