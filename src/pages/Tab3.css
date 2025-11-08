@@ -1,0 +1,361 @@
+.claims-container {
+  padding: 16px;
+  background: #f8f9fa;
+  min-height: 100%;
+}
+
+.stats-card {
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stats-card ion-card-content {
+  padding: 20px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 8px;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.new-claim-btn {
+  --border-radius: 16px;
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  margin-bottom: 20px;
+  font-weight: 600;
+  height: 56px;
+}
+
+/* Filter Section */
+.filter-section {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.filter-chip {
+  --background: white;
+  --color: #7f8c8d;
+  border: 1px solid #e0e0e0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.filter-chip.active {
+  --background: #667eea;
+  --color: white;
+  border-color: #667eea;
+}
+
+.claims-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.claim-card {
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin: 0;
+}
+
+.claim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 16px;
+}
+
+.claim-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.claim-type-icon {
+  font-size: 24px;
+  color: #667eea;
+  background: #f0f4ff;
+  padding: 8px;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.claim-title ion-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+.claim-number {
+  color: #7f8c8d;
+  font-size: 12px;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+}
+
+.status-badge {
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-icon {
+  font-size: 14px;
+}
+
+.claim-details {
+  padding: 16px 0;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-row ion-icon {
+  font-size: 16px;
+  color: #667eea;
+  min-width: 16px;
+  margin-top: 2px;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #7f8c8d;
+  min-width: 100px;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: #2c3e50;
+  font-weight: 500;
+  flex: 1;
+}
+
+.detail-value.description {
+  line-height: 1.4;
+}
+
+.detail-value.amount {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.documents-section {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  border-left: 4px solid #667eea;
+}
+
+.last-update {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.claim-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.claim-actions ion-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.claim-actions ion-button:first-child {
+  --color: #667eea;
+}
+
+.empty-state-card {
+  border-radius: 20px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  color: #7f8c8d;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+  color: #667eea;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.empty-state p {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+
+.claim-form {
+  padding: 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.file-upload-btn {
+  --border-radius: 12px;
+  --background: #f8f9fa;
+  --color: #667eea;
+  border: 2px dashed #667eea;
+}
+
+.camera-btn {
+  --border-radius: 12px;
+  --background: #667eea;
+  --color: white;
+}
+
+.claim-form-content {
+  --background: #f8f9fa;
+}
+
+.claim-form {
+  padding: 16px;
+}
+
+.claim-form ion-list {
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+.claim-form ion-item {
+  --background: white;
+  --border-radius: 12px;
+  margin-bottom: 16px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+}
+
+.file-upload-section {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.file-upload-section h4 {
+  margin: 0 0 16px 0;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.file-upload-btn {
+  --border-radius: 12px;
+  --background: #f8f9fa;
+  --color: #667eea;
+  border: 2px dashed #667eea;
+  height: 80px;
+}
+
+.camera-btn {
+  --border-radius: 12px;
+  --background: #667eea;
+  --color: white;
+  height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-actions ion-button:first-child {
+  --border-radius: 12px;
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  height: 50px;
+  font-weight: 600;
+}
+
+.form-actions ion-button:last-child {
+  --border-radius: 12px;
+  height: 50px;
+  font-weight: 600;
+}
+
+ion-button[disabled] {
+  opacity: 0.6;
+}
+
+@media (max-width: 360px) {
+  .claims-container {
+    padding: 12px;
+  }
+  
+  .claim-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .claim-actions {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .claim-actions ion-button {
+    width: 100%;
+  }
+  
+  .filter-section {
+    gap: 4px;
+  }
+}

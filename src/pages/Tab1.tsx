@@ -33,9 +33,11 @@ import {
   closeCircle
 } from 'ionicons/icons';
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom'; 
 import './Tab1.css';
 
 const Tab1: React.FC = () => {
+  const history = useHistory(); 
   const [showPaymentAlert, setShowPaymentAlert] = useState(false);
   const [showPaymentToast, setShowPaymentToast] = useState(false);
   const [showPaymentProcessing, setShowPaymentProcessing] = useState(false);
@@ -108,6 +110,10 @@ const Tab1: React.FC = () => {
   const dueBills = policies.filter(policy => policy.isDue);
   const totalDue = dueBills.reduce((sum, policy) => sum + parseInt(policy.dueAmount.replace('$', '')), 0);
 
+  const handleFileClaim = () => {
+    history.push('/claims');
+  };
+
   // Payment Handler Functions
   const handleMakePayment = () => {
     if (dueBills.length === 0) {
@@ -143,8 +149,8 @@ const Tab1: React.FC = () => {
 
     try {
       console.log('Initiating payment to gateway...');
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            const isSuccess = Math.random() > 0.1;
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      const isSuccess = Math.random() > 0.1;
       
       if (isSuccess) {
         const updatedPolicies = policies.map(policy => {
@@ -164,7 +170,6 @@ const Tab1: React.FC = () => {
         setToastMessage(`Payment of $${totalPaid} processed successfully! All due bills cleared.`);
         setToastColor('success');
       } else {
-        // Payment failed
         setToastMessage('Payment failed. Please try again or use a different payment method.');
         setToastColor('danger');
       }
@@ -182,12 +187,6 @@ const Tab1: React.FC = () => {
     const date = new Date(currentDueDate);
     date.setMonth(date.getMonth() + 1);
     return date.toISOString().split('T')[0];
-  };
-
-  const handleFileClaim = () => {
-    setToastMessage('Redirecting to claims filing...');
-    setToastColor('primary');
-    setShowPaymentToast(true);
   };
 
   const handleNewPolicy = () => {
