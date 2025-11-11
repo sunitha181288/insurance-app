@@ -27,8 +27,7 @@ import {
   IonSelect,
   IonSelectOption,
   IonDatetimeButton,
-  IonDatetime,
-  IonDatetimeModal
+  IonDatetime
 } from '@ionic/react';
 import { 
   add, 
