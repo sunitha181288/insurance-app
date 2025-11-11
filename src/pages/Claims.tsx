@@ -48,9 +48,9 @@ import {
   close
 } from 'ionicons/icons';
 import { useState } from 'react';
-import './Tab3.css';
+import './Claims.css';
 
-const Tab3: React.FC = () => {
+const Claims: React.FC = () => {
   const [showNewClaimModal, setShowNewClaimModal] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -510,4 +510,4 @@ const Tab3: React.FC = () => {
   );
 };
 
-export default Tab3;
+export default Claims;

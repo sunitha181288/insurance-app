@@ -29,9 +29,9 @@ import {
   shieldCheckmark,
   alertCircle
 } from 'ionicons/icons';
-import './Tab2.css';
+import './Policies.css';
 
-const Tab2: React.FC = () => {
+const Policies: React.FC = () => {
   const policies = [
     {
       id: 1,
@@ -246,4 +246,4 @@ const Tab2: React.FC = () => {
   );
 };
 
-export default Tab2;
+export default Policies;

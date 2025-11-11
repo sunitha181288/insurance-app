@@ -34,9 +34,9 @@ import {
 } from 'ionicons/icons';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom'; 
-import './Tab1.css';
+import './Dashboard.css';
 
-const Tab1: React.FC = () => {
+const Dashboard: React.FC = () => {
   const history = useHistory(); 
   const [showPaymentAlert, setShowPaymentAlert] = useState(false);
   const [showPaymentToast, setShowPaymentToast] = useState(false);
@@ -429,4 +429,4 @@ const Tab1: React.FC = () => {
   );
 };
 
-export default Tab1;
+export default Dashboard;
