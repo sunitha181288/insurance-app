@@ -46,6 +46,24 @@
   font-size: 14px;
   opacity: 0.9;
   font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.admin-badge {
+  margin-bottom: 8px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 8px;
+}
+
+.user-info ion-icon {
+  font-size: 14px;
 }
 
 .welcome-stats {
@@ -69,8 +87,197 @@
   opacity: 0.9;
 }
 
+.admin-stats-card {
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #eb445a;
+}
+
+.admin-stats-card ion-card-header {
+  padding-bottom: 10px;
+}
+
+.admin-stats-card ion-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-stats-card ion-icon {
+  color: #eb445a;
+}
+
+.admin-stat {
+  text-align: center;
+  padding: 12px 8px;
+}
+
+.admin-stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+.admin-stat-label {
+  font-size: 12px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.admin-action-btn {
+  margin-top: 16px;
+  --border-radius: 12px;
+}
+
+.due-bills-card {
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #e74c3c;
+}
+
+.due-bills-card ion-card-header {
+  padding-bottom: 10px;
+}
+
+.due-bills-card ion-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.due-icon {
+  color: #e74c3c;
+}
+
+.due-bills-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #fff5f5;
+  border-radius: 12px;
+}
+
+.due-amount {
+  text-align: center;
+}
+
+.amount {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #e74c3c;
+  margin-bottom: 4px;
+}
+
+.due-text {
+  font-size: 12px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.pay-all-btn {
+  --border-radius: 12px;
+  --background: #2dd36f;
+  --box-shadow: 0 4px 16px rgba(45, 211, 111, 0.3);
+}
+
+.due-bills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.due-bill-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.bill-icon {
+  font-size: 20px;
+  color: #667eea;
+  background: #f0f4ff;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.bill-info {
+  flex: 1;
+}
+
+.bill-type {
+  display: block;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 2px;
+}
+
+.bill-due {
+  font-size: 12px;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.bill-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bill-amount {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.no-due-bills-card {
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-left: 6px solid #2dd36f;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e8f5e8 100%);
+}
+
+.no-due-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.no-due-icon {
+  font-size: 48px;
+  color: #2dd36f;
+}
+
+.no-due-text h3 {
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.no-due-text p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
 /* Quick Actions */
-.actions-card, .policies-card, .tips-card {
+.actions-card, .policies-card, .tips-card, .recent-activity-card {
   border-radius: 20px;
   margin-bottom: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -78,13 +285,15 @@
 
 .actions-card ion-card-header, 
 .policies-card ion-card-header,
-.tips-card ion-card-header {
+.tips-card ion-card-header,
+.recent-activity-card ion-card-header {
   padding-bottom: 10px;
 }
 
 .actions-card ion-card-title,
 .policies-card ion-card-title,
-.tips-card ion-card-title {
+.tips-card ion-card-title,
+.recent-activity-card ion-card-title {
   font-size: 18px;
   font-weight: 700;
   color: #2c3e50;
@@ -184,8 +393,13 @@
   font-weight: 600;
 }
 
-.due-date {
-  color: #e74c3c;
+.due-date.due {
+  color: #e74c3c !important;
+  font-weight: 600;
+}
+
+.due-date.paid {
+  color: #27ae60 !important;
   font-weight: 500;
 }
 
@@ -216,6 +430,7 @@
 .tip-bullet {
   font-size: 16px;
   margin-top: 2px;
+  min-width: 24px;
 }
 
 .tip-text {
@@ -225,8 +440,59 @@
   line-height: 1.4;
 }
 
+.recent-activity-card {
+  border-left: 4px solid #3880ff;
+}
+
+.recent-activity-card ion-icon {
+  color: #3880ff;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-badge {
+  font-size: 10px;
+  padding: 4px 8px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.status-badge.paid {
+  --background: #2dd36f;
+}
+
+.status-badge.due {
+  --background: #eb445a;
+}
+
 /* Responsive */
-@media (max-width: 360px) {
+@media (max-width: 768px) {
   .dashboard-container {
     padding: 12px;
   }
@@ -237,5 +503,45 @@
   
   .stat-number {
     font-size: 18px;
+  }
+  
+  .due-bills-content {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .bill-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-container {
+    padding: 8px;
+  }
+  
+  .welcome-card ion-card-title {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .welcome-icon {
+    align-self: center;
+  }
+  
+  .action-button {
+    height: 80px;
+  }
+  
+  .action-icon {
+    font-size: 24px;
+  }
+  
+  .policy-details {
+    flex-direction: column;
+    gap: 4px;
   }
 }

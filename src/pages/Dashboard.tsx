@@ -30,9 +30,11 @@ import {
   alertCircle,
   trendingUp,
   checkmarkCircle,
-  closeCircle
+  closeCircle,
+  person,
+  logOut
 } from 'ionicons/icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom'; 
 import './Dashboard.css';
 
@@ -43,6 +45,7 @@ const Dashboard: React.FC = () => {
   const [showPaymentProcessing, setShowPaymentProcessing] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState('success');
+  const [userInfo, setUserInfo] = useState({ name: '', role: '', username: '' });
   const [policies, setPolicies] = useState([
     { 
       id: 1, 
@@ -105,6 +108,13 @@ const Dashboard: React.FC = () => {
       action: () => handleEmergency() 
     }
   ];
+
+  useEffect(() => {
+    const name = localStorage.getItem('userName') || 'User';
+    const role = localStorage.getItem('userRole') || 'user';
+    const username = localStorage.getItem('username') || '';
+    setUserInfo({ name, role, username });
+  }, []);
 
   const activePolicies = policies.filter(policy => policy.status === 'Active').length;
   const dueBills = policies.filter(policy => policy.isDue);
@@ -201,11 +211,37 @@ const Dashboard: React.FC = () => {
     setShowPaymentToast(true);
   };
 
+  const handleAdminAction = () => {
+    setToastMessage('Admin panel would open here');
+    setToastColor('primary');
+    setShowPaymentToast(true);
+  };
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Insurance Dashboard</IonTitle>
+          {userInfo.role === 'admin' && (
+            <IonBadge slot="end" color="danger" style={{ marginRight: '10px' }}>
+              ADMIN
+            </IonBadge>
+          )}
+          <IonButton 
+            slot="end" 
+            fill="clear" 
+            size="small"
+            onClick={() => {
+              localStorage.removeItem('isAuthenticated');
+              localStorage.removeItem('username');
+              localStorage.removeItem('userName');
+              localStorage.removeItem('userRole');
+              window.location.href = '/login';
+            }}
+          >
+            <IonIcon icon={logOut} slot="start" />
+            Logout
+          </IonButton>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -216,8 +252,22 @@ const Dashboard: React.FC = () => {
               <IonCardTitle>
                 <IonIcon icon={shieldCheckmark} className="welcome-icon" />
                 <div className="welcome-text">
-                  <div className="greeting">Welcome back, John!</div>
-                  <div className="subtitle">Your insurance coverage is active</div>
+                  <div className="greeting">Welcome back, {userInfo.name}!</div>
+                  <div className="subtitle">
+                    {userInfo.role === 'admin' 
+                      ? 'Administrator Dashboard - Full Access' 
+                      : 'Your insurance coverage is active'
+                    }
+                  </div>
+                  {userInfo.role === 'admin' && (
+                    <div className="admin-badge">
+                      <IonBadge color="danger">ADMINISTRATOR</IonBadge>
+                    </div>
+                  )}
+                  <div className="user-info">
+                    <IonIcon icon={person} />
+                    <span>Logged in as: {userInfo.username}</span>
+                  </div>
                 </div>
               </IonCardTitle>
             </IonCardHeader>
@@ -239,7 +289,58 @@ const Dashboard: React.FC = () => {
             </IonCardContent>
           </IonCard>
 
-          {/* Due Bills Alert - Only shows when there are due bills */}
+          {userInfo.role === 'admin' && (
+            <IonCard className="admin-stats-card">
+              <IonCardHeader>
+                <IonCardTitle>
+                  <IonIcon icon={trendingUp} />
+                  Admin Overview
+                </IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
+                <IonGrid>
+                  <IonRow>
+                    <IonCol size="6">
+                      <div className="admin-stat">
+                        <div className="admin-stat-number">1,247</div>
+                        <div className="admin-stat-label">Total Users</div>
+                      </div>
+                    </IonCol>
+                    <IonCol size="6">
+                      <div className="admin-stat">
+                        <div className="admin-stat-number">$84.2K</div>
+                        <div className="admin-stat-label">Revenue</div>
+                      </div>
+                    </IonCol>
+                  </IonRow>
+                  <IonRow>
+                    <IonCol size="6">
+                      <div className="admin-stat">
+                        <div className="admin-stat-number">42</div>
+                        <div className="admin-stat-label">Pending Claims</div>
+                      </div>
+                    </IonCol>
+                    <IonCol size="6">
+                      <div className="admin-stat">
+                        <div className="admin-stat-number">98%</div>
+                        <div className="admin-stat-label">Satisfaction</div>
+                      </div>
+                    </IonCol>
+                  </IonRow>
+                </IonGrid>
+                <IonButton 
+                  expand="block" 
+                  fill="outline" 
+                  color="danger"
+                  onClick={handleAdminAction}
+                  className="admin-action-btn"
+                >
+                  View Admin Panel
+                </IonButton>
+              </IonCardContent>
+            </IonCard>
+          )}
+
           {dueBills.length > 0 ? (
             <IonCard className="due-bills-card">
               <IonCardHeader>
@@ -335,7 +436,9 @@ const Dashboard: React.FC = () => {
           <IonCard className="policies-card">
             <IonCardHeader>
               <IonCardTitle>My Policies</IonCardTitle>
-              <IonButton fill="clear" size="small">View All</IonButton>
+              <IonButton fill="clear" size="small" onClick={() => history.push('/policies')}>
+                View All
+              </IonButton>
             </IonCardHeader>
             <IonCardContent>
               {policies.map((policy) => (
@@ -379,8 +482,46 @@ const Dashboard: React.FC = () => {
                 <div className="tip-bullet">📝</div>
                 <div className="tip-text">Keep digital copies of all insurance documents</div>
               </div>
+              <div className="tip-item">
+                <div className="tip-bullet">🛡️</div>
+                <div className="tip-text">Consider umbrella insurance for additional liability coverage</div>
+              </div>
             </IonCardContent>
           </IonCard>
+
+          {userInfo.role === 'admin' && (
+            <IonCard className="recent-activity-card">
+              <IonCardHeader>
+                <IonCardTitle>
+                  <IonIcon icon={documentText} />
+                  Recent System Activity
+                </IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
+                <div className="activity-item">
+                  <IonBadge color="success" className="activity-badge">New</IonBadge>
+                  <div className="activity-content">
+                    <div className="activity-title">New user registration</div>
+                    <div className="activity-time">2 minutes ago</div>
+                  </div>
+                </div>
+                <div className="activity-item">
+                  <IonBadge color="warning" className="activity-badge">Claim</IonBadge>
+                  <div className="activity-content">
+                    <div className="activity-title">Auto claim submitted</div>
+                    <div className="activity-time">15 minutes ago</div>
+                  </div>
+                </div>
+                <div className="activity-item">
+                  <IonBadge color="primary" className="activity-badge">Payment</IonBadge>
+                  <div className="activity-content">
+                    <div className="activity-title">Premium payment received</div>
+                    <div className="activity-time">1 hour ago</div>
+                  </div>
+                </div>
+              </IonCardContent>
+            </IonCard>
+          )}
         </div>
 
         {/* Payment Confirmation Alert */}
