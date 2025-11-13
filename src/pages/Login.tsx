@@ -24,7 +24,6 @@ import {
 import { 
   shieldCheckmark, 
   lockClosed, 
-  mail, 
   eye, 
   eyeOff,
   logoGoogle,
@@ -32,17 +31,23 @@ import {
   person
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
+import { User } from '../data/usersData';
+import { 
+  authenticateUser, 
+  registerUser, 
+  saveUserSession, 
+  getDemoUsers
+} from './utils/authUtils';
+import { 
+  validateLoginForm, 
+  validateSignupForm,
+  ValidationErrors 
+} from './utils/validationUtils';
 import './Login.css';
 
 interface LoginProps {
   onLogin: () => void;
 }
-
-const users = [
-  { username: 'john', password: 'password123', name: 'John Doe' },
-  { username: 'sunitha', password: 'insurance123', name: 'Sunitha' },
-  { username: 'admin', password: 'admin123', name: 'Administrator' }
-];
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const history = useHistory();
@@ -53,10 +58,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const demoUsers = getDemoUsers();
 
   const handleLogin = async () => {
-    if (!username || !password) {
-      setAlertMessage('Please enter both username and password');
+    const errors = validateLoginForm(username, password);
+    setValidationErrors(errors);
+    
+    if (Object.values(errors).some(error => error !== undefined)) {
+      setAlertMessage('Please fix the form errors before submitting');
       setShowAlert(true);
       return;
     }
@@ -64,23 +74,19 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const user = users.find(u => u.username === username && u.password === password);
+      const result = await authenticateUser(username, password);
       
-      if (user) {
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('username', user.username);
-        localStorage.setItem('userName', user.name);
-        localStorage.setItem('userRole', user.username === 'admin' ? 'admin' : 'user');
-        
-        setAlertMessage(`Welcome back, ${user.name}!`);
+      if (result.success && result.user) {
+        saveUserSession(result.user);
+        setAlertMessage(`Welcome back, ${result.user.name}!`);
         setShowAlert(true);
         onLogin();
+        
         setTimeout(() => {
           history.push('/dashboard');
         }, 1000);
       } else {
-        setAlertMessage('Invalid username or password. Please try again.');
+        setAlertMessage(result.message || 'Invalid username or password. Please try again.');
         setShowAlert(true);
       }
     } catch (error) {
@@ -92,21 +98,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   const handleSignup = async () => {
-    if (!username || !password) {
-      setAlertMessage('Please enter both username and password');
-      setShowAlert(true);
-      return;
-    }
-
-    if (password.length < 6) {
-      setAlertMessage('Password must be at least 6 characters long');
-      setShowAlert(true);
-      return;
-    }
-
-    const existingUser = users.find(u => u.username === username);
-    if (existingUser) {
-      setAlertMessage('Username already exists. Please choose a different one.');
+    const errors = validateSignupForm(username, password, password);
+    setValidationErrors(errors);
+    
+    if (Object.values(errors).some(error => error !== undefined)) {
+      setAlertMessage('Please fix the form errors before submitting');
       setShowAlert(true);
       return;
     }
@@ -114,26 +110,21 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const newUser = {
-        username,
-        password,
-        name: username.charAt(0).toUpperCase() + username.slice(1) 
-      };
+      const result = await registerUser(username, password);
       
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('username', newUser.username);
-      localStorage.setItem('userName', newUser.name);
-      localStorage.setItem('userRole', 'user');
-      
-      setAlertMessage(`Account created successfully! Welcome, ${newUser.name}!`);
-      setShowAlert(true);
-      
-      onLogin();
-      
-      setTimeout(() => {
-        history.push('/dashboard');
-      }, 1000);
+      if (result.success && result.user) {
+        saveUserSession(result.user);
+        setAlertMessage(`Account created successfully! Welcome, ${result.user.name}!`);
+        setShowAlert(true);
+        onLogin();
+        
+        setTimeout(() => {
+          history.push('/dashboard');
+        }, 1000);
+      } else {
+        setAlertMessage(result.message || 'Signup failed. Please try again.');
+        setShowAlert(true);
+      }
     } catch (error) {
       setAlertMessage('Signup failed. Please try again.');
       setShowAlert(true);
@@ -151,18 +142,30 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setIsLogin(!isLogin);
     setUsername('');
     setPassword('');
+    setValidationErrors({});
   };
 
-  const handleDemoLogin = (demoUser: typeof users[0]) => {
+  const handleDemoLogin = (demoUser: User) => {
     setUsername(demoUser.username);
     setPassword(demoUser.password);
+    setValidationErrors({});
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    if (field === 'username') setUsername(value);
+    if (field === 'password') setPassword(value);
+    
+    setValidationErrors({
+      ...validationErrors,
+      [field]: undefined
+    });
   };
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>V Insurance Portal</IonTitle>
+          <IonTitle>Insurance Portal</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="login-content">
@@ -189,7 +192,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     <small>Quick demo access:</small>
                   </IonText>
                   <div className="demo-buttons">
-                    {users.map((user, index) => (
+                    {demoUsers.map((user, index) => (
                       <IonButton 
                         key={index}
                         size="small"
@@ -230,27 +233,32 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 <span>or continue with {isLogin ? 'username' : 'email'}</span>
               </div>
 
-              <IonItem className="auth-input" lines="none">
+              <IonItem className={`auth-input ${validationErrors.username ? 'invalid' : ''}`} lines="none">
                 <IonIcon icon={person} slot="start" className="input-icon" />
                 <IonLabel position="stacked">Username</IonLabel>
                 <IonInput
                   type="text"
                   value={username}
                   placeholder="Enter your username"
-                  onIonInput={(e) => setUsername(e.detail.value!)}
-                  className="custom-input"
+                  onIonInput={(e) => handleInputChange('username', e.detail.value!)}
+                  className={validationErrors.username ? 'input-invalid' : ''}
                 />
+                {validationErrors.username && (
+                  <IonText color="danger" className="error-message">
+                    {validationErrors.username}
+                  </IonText>
+                )}
               </IonItem>
 
-              <IonItem className="auth-input" lines="none">
+              <IonItem className={`auth-input ${validationErrors.password ? 'invalid' : ''}`} lines="none">
                 <IonIcon icon={lockClosed} slot="start" className="input-icon" />
                 <IonLabel position="stacked">Password</IonLabel>
                 <IonInput
                   type={showPassword ? "text" : "password"}
                   value={password}
                   placeholder="Enter your password"
-                  onIonInput={(e) => setPassword(e.detail.value!)}
-                  className="custom-input"
+                  onIonInput={(e) => handleInputChange('password', e.detail.value!)}
+                  className={validationErrors.password ? 'input-invalid' : ''}
                 />
                 <IonButton 
                   fill="clear" 
@@ -260,6 +268,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 >
                   <IonIcon icon={showPassword ? eyeOff : eye} />
                 </IonButton>
+                {validationErrors.password && (
+                  <IonText color="danger" className="error-message">
+                    {validationErrors.password}
+                  </IonText>
+                )}
               </IonItem>
 
               {isLogin && (
@@ -294,10 +307,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                   <IonText color="medium">
                     <small>
                       <strong>Available demo accounts:</strong><br />
-                      {users.map((user, index) => (
+                      {demoUsers.map((user, index) => (
                         <span key={index}>
                           <strong>{user.name}</strong> - {user.username} / {user.password}
-                          {index < users.length - 1 ? <br /> : ''}
+                          {index < demoUsers.length - 1 ? <br /> : ''}
                         </span>
                       ))}
                     </small>
@@ -318,14 +331,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               </IonCol>
               <IonCol size="12" size-md="4">
                 <div className="feature-item">
-                  <IonIcon icon={mail} className="feature-icon" />
+                  <IonIcon icon={lockClosed} className="feature-icon" />
                   <h3>Instant</h3>
                   <p>Real-time policy management</p>
                 </div>
               </IonCol>
               <IonCol size="12" size-md="4">
                 <div className="feature-item">
-                  <IonIcon icon={lockClosed} className="feature-icon" />
+                  <IonIcon icon={shieldCheckmark} className="feature-icon" />
                   <h3>Protected</h3>
                   <p>Your information is safe with us</p>
                 </div>

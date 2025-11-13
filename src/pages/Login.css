@@ -74,6 +74,23 @@
   margin-bottom: 12px;
 }
 
+.auth-input.invalid {
+  border-color: #eb445a !important;
+  --background: #fff5f5;
+}
+
+.input-invalid {
+  --background: #fff5f5;
+}
+
+.error-message {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 500;
+  color: #eb445a;
+}
+
 .demo-buttons {
   display: flex;
   gap: 8px;

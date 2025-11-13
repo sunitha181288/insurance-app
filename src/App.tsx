@@ -10,11 +10,12 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle, logOut } from 'ionicons/icons';
+import { ellipse, square, triangle, logOut, person } from 'ionicons/icons';
 import Dashboard from './pages/Dashboard';
 import Policies from './pages/Policies';
 import Claims from './pages/Claims';
 import Login from './pages/Login';
+import UserProfile from './pages/UserProfile';
 import { useEffect, useState } from 'react';
 
 /* Core CSS required for Ionic components to work properly */
@@ -133,6 +134,7 @@ const App: React.FC = () => {
               <Route exact path="/login">
                 <Redirect to="/dashboard" />
               </Route>
+              <Route exact path="/profile" component={UserProfile} />
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
               <IonTabButton tab="dashboard" href="/dashboard">
@@ -146,6 +148,10 @@ const App: React.FC = () => {
               <IonTabButton tab="claims" href="/claims">
                 <IonIcon icon={square} />
                 <IonLabel>Claims</IonLabel>
+              </IonTabButton>
+                <IonTabButton tab="profile" href="/profile">
+                <IonIcon icon={person} />  
+                <IonLabel>Profile</IonLabel>
               </IonTabButton>
               <IonTabButton tab="logout" onClick={handleLogout}>
                 <IonIcon icon={logOut} />

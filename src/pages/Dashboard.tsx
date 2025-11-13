@@ -106,7 +106,13 @@ const Dashboard: React.FC = () => {
       label: 'Emergency', 
       color: 'danger', 
       action: () => handleEmergency() 
-    }
+    },
+    { 
+    icon: person, 
+    label: 'My Profile', 
+    color: 'tertiary', 
+    action: () => history.push('/profile') 
+  }
   ];
 
   useEffect(() => {
