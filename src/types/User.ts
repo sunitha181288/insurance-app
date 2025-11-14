@@ -9,4 +9,5 @@ export interface User {
   insuranceType?: string;
   memberSince?: string;
   role?: string;
+  profileImage?: string;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   IonContent,
   IonHeader,
@@ -27,7 +27,8 @@ import {
   IonBadge,
   IonDatetime,
   IonDatetimeButton,
-  IonModal
+  IonModal,
+  IonActionSheet
 } from '@ionic/react';
 import { 
   person, 
@@ -42,11 +43,13 @@ import {
   documentText,
   business,
   close,
-  warning
+  warning,
+  images,
+  trash,
+  cameraReverse
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 
-// Import utility functions
 import { User } from '../data/usersData';
 import { 
   formatDateToDDMMYYYY, 
@@ -65,11 +68,20 @@ import {
   generateUserData, 
   getUserStats 
 } from './utils/userDataUtils';
+import {
+  fileToBase64,
+  validateImage,
+  compressImage,
+  generateAvatarFromName,
+  saveProfileImage,
+  deleteProfileImage
+} from './utils/imageUtils';
 
 import './UserProfile.css';
 
 const UserProfile: React.FC = () => {
   const history = useHistory();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [user, setUser] = useState<User>({
     username: '',
@@ -81,7 +93,8 @@ const UserProfile: React.FC = () => {
     dateOfBirth: '',
     insuranceType: 'Comprehensive',
     memberSince: '',
-    role: 'user'
+    role: 'user',
+    profileImage: ''
   });
 
   const [originalUser, setOriginalUser] = useState<User>({
@@ -94,7 +107,8 @@ const UserProfile: React.FC = () => {
     dateOfBirth: '',
     insuranceType: 'Comprehensive',
     memberSince: '',
-    role: 'user'
+    role: 'user',
+    profileImage: ''
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -103,6 +117,8 @@ const UserProfile: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [isFormValid, setIsFormValid] = useState(true);
+  const [showImageActionSheet, setShowImageActionSheet] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -125,6 +141,88 @@ const UserProfile: React.FC = () => {
     setOriginalUser(formattedUserData);
     
     localStorage.setItem('userProfile', JSON.stringify(formattedUserData));
+  };
+
+  const handleImageAction = (action: string) => {
+    setShowImageActionSheet(false);
+    
+    switch (action) {
+      case 'take-photo':
+        setToastMessage('Camera functionality would be implemented here');
+        setShowToast(true);
+        break;
+      case 'choose-from-library':
+        fileInputRef.current?.click();
+        break;
+      case 'remove-photo':
+        handleRemovePhoto();
+        break;
+    }
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const validation = validateImage(file);
+    if (!validation.isValid) {
+      setToastMessage(validation.message || 'Invalid image file');
+      setShowToast(true);
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const compressedFile = await compressImage(file);
+      const base64Image = await fileToBase64(compressedFile);
+      const updatedUser = {
+        ...user,
+        profileImage: base64Image
+      };
+      
+      setUser(updatedUser);
+      
+      if (user.username) {
+        saveProfileImage(user.username, base64Image);
+      }
+      
+      setToastMessage('Profile picture updated successfully!');
+      setShowToast(true);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setToastMessage('Failed to upload image. Please try again.');
+      setShowToast(true);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    if (user.username) {
+      deleteProfileImage(user.username);
+    }
+    
+    const newAvatar = generateAvatarFromName(user.name);
+    
+    const updatedUser = {
+      ...user,
+      profileImage: newAvatar
+    };
+    
+    setUser(updatedUser);
+    setToastMessage('Profile picture removed');
+    setShowToast(true);
+  };
+
+  const getProfileImage = () => {
+    if (user.profileImage && user.profileImage.startsWith('data:')) {
+      return user.profileImage;
+    }
+    return user.profileImage || generateAvatarFromName(user.name);
   };
 
   const validateForm = (): boolean => {
@@ -160,7 +258,7 @@ const UserProfile: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setUser(originalUser);
+    setUser({ ...originalUser });
     setIsEditing(false);
     setToastMessage('Changes discarded');
     setShowToast(true);
@@ -249,17 +347,38 @@ const UserProfile: React.FC = () => {
       
       <IonContent fullscreen>
         <div className="profile-container">
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            accept="image/*"
+            onChange={handleFileSelect}
+          />
+
           <IonCard className="profile-header-card">
             <IonCardContent>
               <div className="profile-header">
                 <div className="avatar-section">
-                  <IonAvatar className="profile-avatar">
-                    <img 
-                      src={`https://ui-avatars.com/api/?name=${user.name}&background=667eea&color=fff&size=150`} 
-                      alt="Profile" 
-                    />
-                  </IonAvatar>
-                  <IonButton fill="clear" className="camera-btn">
+                  <div className="avatar-container">
+                    <IonAvatar className="profile-avatar">
+                      <img 
+                        src={getProfileImage()} 
+                        alt="Profile" 
+                        className="profile-image"
+                      />
+                    </IonAvatar>
+                    {isUploading && (
+                      <div className="uploading-overlay">
+                        <div className="spinner"></div>
+                      </div>
+                    )}
+                  </div>
+                  <IonButton 
+                    fill="clear" 
+                    className="camera-btn"
+                    onClick={() => setShowImageActionSheet(true)}
+                    disabled={isUploading}
+                  >
                     <IonIcon icon={camera} />
                   </IonButton>
                 </div>
@@ -302,7 +421,13 @@ const UserProfile: React.FC = () => {
           <div className="action-buttons">
             <IonButton 
               fill={isEditing ? "outline" : "solid"}
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={() => {
+                if (isEditing) {
+                  handleCancel();
+                } else {
+                  setIsEditing(true);
+                }
+              }}
             >
               <IonIcon icon={isEditing ? close : "create"} slot="start" />
               {isEditing ? 'Cancel Editing' : 'Edit Profile'}
@@ -313,7 +438,7 @@ const UserProfile: React.FC = () => {
                 fill="solid" 
                 color="success"
                 onClick={handleSave}
-                disabled={!isFormValid}
+                disabled={!isFormValid || isUploading}
               >
                 <IonIcon icon={save} slot="start" />
                 Save Changes
@@ -331,6 +456,34 @@ const UserProfile: React.FC = () => {
               </IonButton>
             )}
           </div>
+
+          <IonActionSheet
+            isOpen={showImageActionSheet}
+            onDidDismiss={() => setShowImageActionSheet(false)}
+            buttons={[
+              {
+                text: 'Take Photo',
+                icon: cameraReverse,
+                handler: () => handleImageAction('take-photo')
+              },
+              {
+                text: 'Choose from Library',
+                icon: images,
+                handler: () => handleImageAction('choose-from-library')
+              },
+              {
+                text: 'Remove Current Photo',
+                icon: trash,
+                role: 'destructive',
+                handler: () => handleImageAction('remove-photo')
+              },
+              {
+                text: 'Cancel',
+                icon: close,
+                role: 'cancel'
+              }
+            ]}
+          />
 
           {isEditing && !isFormValid && (
             <IonCard className="validation-card">
@@ -678,8 +831,8 @@ const UserProfile: React.FC = () => {
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}
-          duration={2000}
-          position="top"
+          duration={3000}
+          position="bottom"
           color="success"
         />
       </IonContent>

@@ -1,6 +1,7 @@
 // User data utility functions
 import { User } from '../../data/usersData';
 import { getUserProfileData } from '../../data/usersData';
+import { generateAvatarFromName, loadProfileImage } from './imageUtils';
 
 // User stats interface
 export interface UserStats {
@@ -19,13 +20,17 @@ export const generateUserData = (
   role: string
 ): User => {
   const profileData = getUserProfileData(username);
-  
+    let profileImage = username ? loadProfileImage(username) : undefined;
+  if (!profileImage && name) {
+    profileImage = generateAvatarFromName(name);
+  }
   const baseData: User = {
     username: username || 'unknown',
     name: name || 'Unknown User',
     password: '', // Not needed for profile
     ...profileData,
-    role: role
+    role: role,
+    profileImage: profileImage || undefined
   };
 
   return baseData;
