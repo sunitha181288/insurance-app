@@ -55,7 +55,7 @@ import {
   formatDateToDDMMYYYY, 
   formatDateToYYYYMMDD, 
   getCurrentDate 
-} from './utils/dateUtils';
+} from '../utils/dateUtils';
 import { 
   validateName, 
   validateEmail, 
@@ -63,11 +63,11 @@ import {
   validateDateOfBirth, 
   validateAddress,
   ValidationErrors 
-} from './utils/validationUtils';
+} from '../utils/validationUtils';
 import { 
   generateUserData, 
   getUserStats 
-} from './utils/userDataUtils';
+} from '../utils/userDataUtils';
 import {
   fileToBase64,
   validateImage,
@@ -75,7 +75,7 @@ import {
   generateAvatarFromName,
   saveProfileImage,
   deleteProfileImage
-} from './utils/imageUtils';
+} from '../utils/imageUtils';
 
 import './UserProfile.css';
 

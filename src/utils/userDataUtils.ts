@@ -1,9 +1,7 @@
-// User data utility functions
-import { User } from '../../data/usersData';
-import { getUserProfileData } from '../../data/usersData';
+import { User } from '../types/User';
+import { getUserProfileData } from './authUtils';
 import { generateAvatarFromName, loadProfileImage } from './imageUtils';
 
-// User stats interface
 export interface UserStats {
   activePolicies: number;
   monthlyPremium: number;
@@ -11,34 +9,32 @@ export interface UserStats {
   coverageScore: number;
 }
 
-/**
- * Generate user-specific data based on username
- */
+
 export const generateUserData = (
   username: string | null, 
   name: string | null, 
   role: string
 ): User => {
   const profileData = getUserProfileData(username);
-    let profileImage = username ? loadProfileImage(username) : undefined;
+  
+  let profileImage = username ? loadProfileImage(username) : undefined;
   if (!profileImage && name) {
     profileImage = generateAvatarFromName(name);
   }
+  
   const baseData: User = {
     username: username || 'unknown',
     name: name || 'Unknown User',
-    password: '', // Not needed for profile
+    password: '[HIDDEN]', // Never expose password
     ...profileData,
-    role: role,
+    role: role as 'user' | 'admin',
     profileImage: profileImage || undefined
   };
 
   return baseData;
 };
 
-/**
- * Generate user-specific statistics
- */
+
 export const getUserStats = (username: string | null): UserStats => {
   switch (username) {
     case 'john':
@@ -75,17 +71,26 @@ export const getUserStats = (username: string | null): UserStats => {
   }
 };
 
-/**
- * Save user profile to localStorage
- */
+
 export const saveUserProfile = (user: User): void => {
-  localStorage.setItem('userProfile', JSON.stringify(user));
+  const { password, ...safeUser } = user;
+  localStorage.setItem('userProfile', JSON.stringify(safeUser));
 };
 
-/**
- * Load user profile from localStorage
- */
+
 export const loadUserProfile = (): User | null => {
-  const saved = localStorage.getItem('userProfile');
-  return saved ? JSON.parse(saved) : null;
+  try {
+    const saved = localStorage.getItem('userProfile');
+    if (saved) {
+      const userData = JSON.parse(saved);
+      return {
+        ...userData,
+        password: '[HIDDEN]'
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error loading user profile:', error);
+    return null;
+  }
 };

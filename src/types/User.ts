@@ -8,6 +8,6 @@ export interface User {
   dateOfBirth?: string;
   insuranceType?: string;
   memberSince?: string;
-  role?: string;
+  role?: 'user' | 'admin';
   profileImage?: string;
 }

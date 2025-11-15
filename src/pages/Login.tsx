@@ -31,18 +31,18 @@ import {
   person
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
-import { User } from '../data/usersData';
+import { User } from '../types/User';
 import { 
   authenticateUser, 
   registerUser, 
   saveUserSession, 
   getDemoUsers
-} from './utils/authUtils';
+} from '../utils/authUtils';
 import { 
   validateLoginForm, 
   validateSignupForm,
   ValidationErrors 
-} from './utils/validationUtils';
+} from '../utils/validationUtils';
 import './Login.css';
 
 interface LoginProps {
@@ -147,8 +147,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   const handleDemoLogin = (demoUser: User) => {
     setUsername(demoUser.username);
-    setPassword(demoUser.password);
+    setPassword('');
     setValidationErrors({});
+    
+    setAlertMessage(`Demo user ${demoUser.name} selected. Use the demo password to login.`);
+    setShowAlert(true);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -174,7 +177,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <IonIcon icon={shieldCheckmark} className="app-logo" />
             <h1 className="app-title">VInsure</h1>
             <p className="app-subtitle">
-              {isLogin ? 'Welcome back to your V insurance portal' : 'Create your insurance account'}
+              {isLogin ? 'Welcome back to your insurance portal' : 'Create your insurance account'}
             </p>
           </div>
 
@@ -306,13 +309,10 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 <div className="demo-credentials">
                   <IonText color="medium">
                     <small>
-                      <strong>Available demo accounts:</strong><br />
-                      {demoUsers.map((user, index) => (
-                        <span key={index}>
-                          <strong>{user.name}</strong> - {user.username} / {user.password}
-                          {index < demoUsers.length - 1 ? <br /> : ''}
-                        </span>
-                      ))}
+                      <strong>Demo accounts:</strong><br />
+                      <strong>John Doe</strong> - john / Password123<br />
+                      <strong>Sunitha</strong> - sunitha / Insurance123<br />
+                      <strong>Admin</strong> - admin / Admin123
                     </small>
                   </IonText>
                 </div>

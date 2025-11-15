@@ -1,6 +1,5 @@
-// Authentication utility functions
-import { User } from '../../data/usersData';
-import { usersData, getUserByUsername, validateUserCredentials } from '../../data/usersData';
+import { User } from '../types/User';
+import { usersData, getUserByUsername, validateUserCredentials, getAllUsers, getUserProfileData as getUserProfileDataFromData } from '../data/usersData';
 
 // Login response interface
 export interface LoginResponse {
@@ -25,9 +24,11 @@ export const authenticateUser = async (username: string, password: string): Prom
   const user = getUserByUsername(username);
   
   if (user && validateUserCredentials(username, password)) {
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
     return {
       success: true,
-      user: user
+      user: { ...userWithoutPassword, password: '[HIDDEN]' } as User
     };
   } else {
     return {
@@ -60,8 +61,15 @@ export const registerUser = async (username: string, password: string): Promise<
   
   const newUser: User = {
     username,
-    password,
-    name: username.charAt(0).toUpperCase() + username.slice(1)
+    password: '[HIDDEN]',
+    name: username.charAt(0).toUpperCase() + username.slice(1),
+    email: `${username}@insurance.com`,
+    phone: '+1 (555) 000-0000',
+    address: 'New User Address',
+    dateOfBirth: '01-01-1980',
+    insuranceType: 'Standard',
+    memberSince: new Date().toLocaleDateString('en-GB'),
+    role: 'user'
   };
   
   return {
@@ -77,7 +85,7 @@ export const saveUserSession = (user: User): void => {
   localStorage.setItem('isAuthenticated', 'true');
   localStorage.setItem('username', user.username);
   localStorage.setItem('userName', user.name);
-  localStorage.setItem('userRole', user.username === 'admin' ? 'admin' : 'user');
+  localStorage.setItem('userRole', user.role || 'user');
 };
 
 /**
@@ -100,8 +108,8 @@ export const isAuthenticated = (): boolean => {
 /**
  * Get current user from session
  */
-export const getCurrentUser = () => {
-  if (!isAuthenticated()) return null;
+export const getCurrentUser = (): { username: string | null; name: string | null; role: string | null } => {
+  if (!isAuthenticated()) return { username: null, name: null, role: null };
   
   return {
     username: localStorage.getItem('username'),
@@ -111,8 +119,28 @@ export const getCurrentUser = () => {
 };
 
 /**
- * Get demo users for quick login
+ * Get demo users for quick login (without passwords)
  */
 export const getDemoUsers = (): User[] => {
-  return usersData;
+  return usersData.map((user: User) => {
+    const { password, ...userWithoutPassword } = user;
+    return {
+      ...userWithoutPassword,
+      password: '[HIDDEN]'
+    } as User;
+  });
+};
+
+/**
+ * Get user profile data by username
+ */
+export const getUserProfileData = (username: string | null): Partial<User> => {
+  return getUserProfileDataFromData(username);
+};
+
+// Export all the functions that might be needed by other files
+export {
+  getUserByUsername,
+  validateUserCredentials,
+  getAllUsers
 };

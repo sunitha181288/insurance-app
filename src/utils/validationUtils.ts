@@ -1,5 +1,3 @@
-// Validation utility functions
-
 // Validation error types
 export interface ValidationErrors {
   name?: string;
@@ -53,7 +51,8 @@ export const validatePhone = (phone: string): string | undefined => {
   if (!phone.trim()) {
     return 'Phone number is required';
   }
-  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+  // Allow various phone number formats: +1 (555) 123-4567, 555-123-4567, 5551234567, etc.
+  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[(]?[\d\s\-\(\)]{10,}$/;
   const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
   if (!phoneRegex.test(cleanPhone)) {
     return 'Please enter a valid phone number';
@@ -69,27 +68,38 @@ export const validateDateOfBirth = (dateOfBirth: string): string | undefined => 
     return 'Date of birth is required';
   }
   
+  // Check if date is in DD-MM-YYYY format
   const dateRegex = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/;
   if (!dateRegex.test(dateOfBirth)) {
     return 'Please enter date in DD-MM-YYYY format';
   }
   
-  const birthDate = new Date(dateOfBirth.split('-').reverse().join('-'));
+  // Parse the date
+  const [day, month, year] = dateOfBirth.split('-').map(Number);
+  const birthDate = new Date(year, month - 1, day);
   const today = new Date();
-  const minDate = new Date();
-  minDate.setFullYear(today.getFullYear() - 100);
-  const maxDate = new Date();
-  maxDate.setFullYear(today.getFullYear() - 18);
   
-  if (birthDate > maxDate) {
-    return 'You must be at least 18 years old';
-  }
-  if (birthDate < minDate) {
-    return 'Please enter a valid date of birth';
-  }
-  if (isNaN(birthDate.getTime())) {
+  // Validate the date is valid
+  if (birthDate.getDate() !== day || birthDate.getMonth() !== month - 1 || birthDate.getFullYear() !== year) {
     return 'Please enter a valid date';
   }
+  
+  // Check if user is at least 18 years old
+  const minDate = new Date();
+  minDate.setFullYear(today.getFullYear() - 18);
+  
+  if (birthDate > minDate) {
+    return 'You must be at least 18 years old';
+  }
+  
+  // Check if date is not too far in the past (reasonable age limit)
+  const maxDate = new Date();
+  maxDate.setFullYear(today.getFullYear() - 100);
+  
+  if (birthDate < maxDate) {
+    return 'Please enter a valid date of birth';
+  }
+  
   return undefined;
 };
 
@@ -176,6 +186,41 @@ export const validateSignupForm = (username: string, password: string, confirmPa
     confirmPassword: validatePasswordMatch(password, confirmPassword)
   };
   
+  return errors;
+};
+
+/**
+ * Validate profile form
+ */
+export const validateProfileForm = (formData: {
+  name?: string;
+  email?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  address?: string;
+}): ValidationErrors => {
+  const errors: ValidationErrors = {};
+
+  if (formData.name !== undefined) {
+    errors.name = validateName(formData.name);
+  }
+  
+  if (formData.email !== undefined) {
+    errors.email = validateEmail(formData.email);
+  }
+  
+  if (formData.phone !== undefined) {
+    errors.phone = validatePhone(formData.phone);
+  }
+  
+  if (formData.dateOfBirth !== undefined) {
+    errors.dateOfBirth = validateDateOfBirth(formData.dateOfBirth);
+  }
+  
+  if (formData.address !== undefined) {
+    errors.address = validateAddress(formData.address);
+  }
+
   return errors;
 };
 

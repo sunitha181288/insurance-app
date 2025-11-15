@@ -1,9 +1,16 @@
 import { User as UserType } from '../types/User';
 export type User = UserType;
+
+const DEMO_PASSWORDS: { [key: string]: string } = {
+  'john': 'Password123',
+  'sunitha': 'Insurance123', 
+  'admin': 'Admin123'
+};
+
 export const usersData: User[] = [
   {
     username: 'john',
-    password: 'Password123',
+    password: DEMO_PASSWORDS.john,
     name: 'John Doe',
     email: 'john@insurance.com',
     phone: '+1 (555) 123-4567',
@@ -15,7 +22,7 @@ export const usersData: User[] = [
   },
   {
     username: 'sunitha',
-    password: 'Insurance123',
+    password: DEMO_PASSWORDS.sunitha,
     name: 'Sunitha',
     email: 'sunitha@insurance.com',
     phone: '+1 (555) 987-6543',
@@ -27,7 +34,7 @@ export const usersData: User[] = [
   },
   {
     username: 'admin',
-    password: 'Admin123',
+    password: DEMO_PASSWORDS.admin,
     name: 'Administrator',
     email: 'admin@insurance.com',
     phone: '+1 (555) 246-8135',
@@ -71,20 +78,13 @@ export const getUserProfileData = (username: string | null): Partial<User> => {
 
   const user = getUserByUsername(username);
   if (user) {
-    return {
-      email: user.email,
-      phone: user.phone,
-      address: user.address,
-      dateOfBirth: user.dateOfBirth,
-      insuranceType: user.insuranceType,
-      memberSince: user.memberSince,
-      role: user.role
-    };
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   return {
     email: `${username}@insurance.com`,
-    phone: '+1 (943) 000-0000',
+    phone: '+1 (555) 000-0000',
     address: 'Standard Address',
     dateOfBirth: '01-01-1980',
     insuranceType: 'Standard',
